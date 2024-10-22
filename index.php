@@ -5,14 +5,17 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require 'autoload.php';
+require_once './config/config.php'; // Cela doit contenir l'initialisation de $bdd
 
 class Router
 {
     private $routes = [];
     private $prefix;
+    private $bdd; // Ajout de la connexion à la base de données
 
-    public function __construct($prefix = '')
+    public function __construct($bdd, $prefix = '')
     {
+        $this->bdd = $bdd; // Initialise la connexion
         $this->prefix = trim($prefix, '/');
     }
 
@@ -56,8 +59,8 @@ class Router
                     // Extraction du nom du contrôleur et de la méthode
                     list($controllerName, $methodName) = explode('@', $controllerMethod);
 
-                    // Instanciation du contrôleur et appel de la méthode avec les paramètres
-                    $controller = new $controllerName();
+                    // Instanciation du contrôleur avec la connexion à la base de données
+                    $controller = new $controllerName($this->bdd); // Ajout de $bdd ici
                     call_user_func_array([$controller, $methodName], $params);
                     return;
                 }
@@ -70,8 +73,8 @@ class Router
     }
 }
 
-// Instanciation du routeur
-$router = new Router('FrameworkMVC');
+// Instanciation du routeur avec la connexion à la base de données
+$router = new Router($bdd, 'FrameworkMVC');
 
 // Ajout des routes
 $router->addRoute('', 'HomeController@index'); // Pour la racine

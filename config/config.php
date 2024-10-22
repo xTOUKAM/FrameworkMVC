@@ -15,16 +15,14 @@
     }
 
     // Connexion à la base de données
-    $db = new PDO(
-        "mysql:host={$env['DB_HOST']};dbname={$env['DB_NAME']};charset=utf8",
-        $env['DB_USER'],
-        $env['DB_PASSWORD'],
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-    );
-
-    // Définit le mode d'erreur PDO sur Exception
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Définit le mode de récupération par défaut sur FETCH_ASSOC
-    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    try {
+        $bdd = new PDO(
+            'mysql:host=' . $env['DB_HOST'] . ';dbname=' . $env['DB_NAME'] . ';charset=utf8',
+            $env['DB_USER'],
+            $env['DB_PASSWORD']
+        );
+        $bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } catch (PDOException $e) {
+        die("Erreur : " . $e->getMessage());
+    }
 ?>
